@@ -12,6 +12,8 @@ python-dotenv = "^1.0.1"
 openai = "^1.66.3"
 pydbantic = "^0.0.47"
 aiosqlite = "^0.21.0"
+black = "^25.1.0"
+isort = "^6.0.1"
 
 
 [build-system]

@@ -1,8 +1,9 @@
-from sample_rag.agent import Agent
-from sample_rag.database import populate_database, ITEMS_DATABASE
-import pathlib
 import asyncio
 import logging
+
+from sample_rag.agent import Agent
+from sample_rag.database import ITEMS_DATABASE, populate_database
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -23,7 +24,7 @@ test_questions = [
     "Which luminaire is best suited for my home theater?",
     "Give me all lamps with at least 1500W and a lifetime of more than 3000 hours.",
     "What is the smallest unit I can order?",
-    "Which luminaire has the SCIP number dd2ddf15-037b-4473-8156-97498e721fb3?"
+    "Which luminaire has the SCIP number dd2ddf15-037b-4473-8156-97498e721fb3?",
 ]
 
 for question in test_questions:

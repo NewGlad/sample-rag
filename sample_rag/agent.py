@@ -1,20 +1,20 @@
-
-from sample_rag.models import Item
-from sample_rag.database import ITEMS_DATABASE
-from sample_rag.pdf_utils import extract_text_from_pdf
-from pathlib import Path
-import logging
 import asyncio
-from openai import OpenAI
+import json
+import logging
+from pathlib import Path
 
 from dotenv import load_dotenv
-import json
+from openai import OpenAI
+
+from sample_rag.database import ITEMS_DATABASE
 from sample_rag.models import Item
+from sample_rag.pdf_utils import extract_text_from_pdf
 
 load_dotenv()
 openai_client = OpenAI()
 
 logger = logging.getLogger()
+
 
 class Agent:
     __openai_tools_defition = [
@@ -30,14 +30,14 @@ class Agent:
                     "properties": {
                         "filename": {
                             "type": "string",
-                            "description": "File name of required document"
+                            "description": "File name of required document",
                         }
                     },
                     "required": ["filename"],
-                    "additionalProperties": False
+                    "additionalProperties": False,
                 },
-                "strict": True
-            }
+                "strict": True,
+            },
         },
         {
             "type": "function",
@@ -49,20 +49,20 @@ class Agent:
                     "properties": {
                         "sql_query": {
                             "type": "string",
-                            "description": "SQL query for finding a required data"
+                            "description": "SQL query for finding a required data",
                         }
                     },
                     "required": ["sql_query"],
-                    "additionalProperties": False
+                    "additionalProperties": False,
                 },
-                "strict": True
-            }
-        }
+                "strict": True,
+            },
+        },
     ]
 
     def __init__(self, openai_model: str = "gpt-4o"):
         self.openai_model = openai_model
-        
+
     def _tool_execute_sql(self, sql_query: str) -> list[Item]:
         try:
             cursor = ITEMS_DATABASE.engine.execute(sql_query)
@@ -83,7 +83,9 @@ class Agent:
     def _answer_imlp(self, question: str, messages: list | None) -> str:
         if messages is None:
             messages = [
-            {"role": "system", "content": """
+                {
+                    "role": "system",
+                    "content": """
                 You are advanced sales assistant.
                 In the next message, you will get a customer question about the available assortment.
                 Your task is to answer the questions as much precise as possible.
@@ -145,18 +147,18 @@ class Agent:
                             PRIMARY KEY (filename)
                         );
                 ```
-            """
-            },
-            {"role": "user", "content": question},
-        ]
+            """,
+                },
+                {"role": "user", "content": question},
+            ]
 
         completion = openai_client.beta.chat.completions.parse(
             model=self.openai_model,
             messages=messages,
             n=1,
             temperature=0.1,
-            tools=self.__openai_tools_defition
-        )    
+            tools=self.__openai_tools_defition,
+        )
         if not completion.choices[0].message.tool_calls:
             # final result
             return completion.choices[0].message.content
@@ -166,18 +168,15 @@ class Agent:
             tool_name = tool_call.function.name
             tool_arguments = json.loads(tool_call.function.arguments)
 
-            if tool_name == 'tool_read_pdf_content':
-                result = self._tool_read_pdf_content(tool_arguments['filename'])
-            elif tool_name == 'tool_execute_sql':
-                result = self._tool_execute_sql(tool_arguments['sql_query'])
+            if tool_name == "tool_read_pdf_content":
+                result = self._tool_read_pdf_content(tool_arguments["filename"])
+            elif tool_name == "tool_execute_sql":
+                result = self._tool_execute_sql(tool_arguments["sql_query"])
             else:
                 logger.error("Unknown tool name %s", tool_name)
                 raise ValueError(f"Unknown tool name: {tool_name}")
-            
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "content": result
-            })
+
+            messages.append(
+                {"role": "tool", "tool_call_id": tool_call.id, "content": result}
+            )
         return self._answer_imlp(question, messages)
-    
