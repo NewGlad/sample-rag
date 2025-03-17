@@ -17,20 +17,20 @@ This repository demonstrates a search solution built on PDF documents using a La
 While embedding-based semantic search with top_n document retrieval is a popular approach, it is not ideal for this project due to the nature of the queries we expect. Test queries include:
 
 1. **Exact filtering by product details:**  
-   - Example: "How much does the XBO 4000 W/HS XL OFR weigh?"
+   - Example: `"How much does the XBO 4000 W/HS XL OFR weigh?"`
 2. **Complex numeric filters:**  
-   - Example: "Give me all lamps with at least 1500W and a lifetime of more than 3000 hours."
+   - Example: `"Give me all lamps with at least 1500W and a lifetime of more than 3000 hours."`
 3. **Order and aggregation queries:**  
-   - Example: "What is the smallest unit I can order?"
+   - Example: `"What is the smallest unit I can order?"`
 4. **Exact matching with identifiers:**  
-   - Example: "Which luminaire has the SCIP number dd2ddf15-037b-4473-8156-97498e721fb3?"
+   - Example: `"Which luminaire has the SCIP number dd2ddf15-037b-4473-8156-97498e721fb3?"`
 
 Semantic search that simply retrieves a fixed number of top documents based on similarity would not suffice for these cases because:
 
 - **Exact filtering is required:** The queries often involve precise matching and numeric comparisons.
 - **Advanced data operations:** The solution needs to handle queries that require filtering by thresholds and computing min/max values.
   
-The chosen approach is to **parse PDF documents** and store their contents in a database. This allows the LLM to leverage SQL queries over the structured data or read the entire document from the file system if needed.
+The chosen approach is to parse PDF documents and store their contents in a database in structural form. This allows the LLM to leverage SQL queries over the structured data or read the entire document from the file system if needed.
 
 ## How It Works
 
