@@ -57,6 +57,14 @@ The chosen approach is to parse PDF documents and store their contents in a data
     ```bash
     poetry install
 
-3. **Run the project:**
+3. **Prepare environment:**
+   Project uses OpenAI API for LLM features.
+   So, you have to configure the OpenAI API key.
+   You have 2 options:
+      -  set `OPENAI_API_KEY` in the terminal: `export OPENAI_API_KEY="YOUR_KEY"`
+      - create a `.env` file in the project root and set a key there. Please look at `sample.env` as an example.
+   You can find / create your API access key at `https://platform.openai.com/api-keys`
+
+4. **Run the project:**
     ```bash
     poetry run python main.py
